@@ -15,13 +15,13 @@ members = [
 ]
 
 [dependencies]
-actix-http = "2.0.0-alpha.3"
-actix-rt = "1.1.1"
-actix-web = "3.0.0-alpha.2"
-anyhow = "1.0"
+actix-http = "2"
+actix-rt = "1"
+actix-web = "3"
+anyhow = "1"
 bytes = "0.5"
 futures = "0.3"
-pin-project = "0.4.9"
-thiserror = "1.0"
+pin-project = "0.4"
+thiserror = "1"
 tokio = { version = "0.2", features = ["sync", "stream", "io-util"] }
-tokio-util = { version = "0.2", features = ["codec"] }
+tokio-util = { version = "0.3", features = ["codec"] }
