@@ -4,21 +4,24 @@ use actix_http::{
 };
 use actix_web::Error;
 use bytes::{Bytes, BytesMut};
+use bytestring::ByteString;
 use futures::stream::{Stream, StreamExt};
 use std::{
     collections::VecDeque,
+    convert::TryFrom,
     io,
     pin::Pin,
     task::{Context, Poll},
 };
 use tokio::sync::mpsc::Receiver;
+use tokio_stream::wrappers::ReceiverStream;
 use tokio_util::codec::{Decoder, Encoder};
 
 /// A response body for Websocket HTTP Requests
 #[pin_project::pin_project]
 pub struct StreamingBody {
     #[pin]
-    session_rx: Receiver<Message>,
+    session_rx: ReceiverStream<Message>,
 
     messages: VecDeque<Message>,
     buf: BytesMut,
@@ -43,7 +46,7 @@ pub struct MessageStream {
 impl StreamingBody {
     pub(super) fn new(session_rx: Receiver<Message>) -> Self {
         StreamingBody {
-            session_rx,
+            session_rx: ReceiverStream::new(session_rx),
             messages: VecDeque::new(),
             buf: BytesMut::new(),
             codec: Codec::new(),
@@ -152,11 +155,10 @@ impl Stream for MessageStream {
         while let Some(frame) = this.codec.decode(&mut this.buf)? {
             let message = match frame {
                 Frame::Text(bytes) => {
-                    let s = std::str::from_utf8(&bytes)
-                        .map_err(|e| {
-                            ProtocolError::Io(io::Error::new(io::ErrorKind::Other, e.to_string()))
-                        })?
-                        .to_string();
+                    let s = ByteString::try_from(bytes).map_err(|e| {
+                        ProtocolError::Io(io::Error::new(io::ErrorKind::Other, e.to_string()))
+                    })?;
+
                     Message::Text(s)
                 }
                 Frame::Binary(bytes) => Message::Binary(bytes),

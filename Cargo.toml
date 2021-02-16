@@ -15,13 +15,15 @@ members = [
 ]
 
 [dependencies]
-actix-http = "2"
-actix-rt = "1"
-actix-web = "3"
-anyhow = "1"
-bytes = "0.5"
-futures = "0.3"
-pin-project = "0.4"
-thiserror = "1"
-tokio = { version = "0.2", features = ["sync", "stream", "io-util"] }
-tokio-util = { version = "0.3", features = ["codec"] }
+actix-http = "3.0.0-beta.3"
+actix-rt = "2"
+actix-web = "4.0.0-beta.3"
+anyhow = "*"
+bytes = "*"
+bytestring = "*"
+futures = "*"
+pin-project = "*"
+thiserror = "*"
+tokio = { version = "*", features = ["sync", "io-util"] }
+tokio-util = { version = "*", features = ["codec"] }
+tokio-stream = { version = "*", default-features = false }

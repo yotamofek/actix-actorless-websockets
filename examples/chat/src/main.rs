@@ -90,7 +90,7 @@ async fn ws(
                 }
                 Message::Text(s) => {
                     info!("Relaying text, {}", s);
-                    chat.send(s).await;
+                    chat.send(s.to_string()).await;
                 }
                 Message::Close(reason) => {
                     let _ = session.close(reason).await;
