@@ -68,7 +68,7 @@ pub fn handle(
     let (tx, rx) = channel(32);
 
     Ok((
-        response.streaming(StreamingBody::new(rx)),
+        HttpResponse::from(response.streaming(StreamingBody::new(rx))),
         Session::new(tx),
         MessageStream::new(body.into_inner()),
     ))

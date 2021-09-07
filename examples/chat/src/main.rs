@@ -1,4 +1,8 @@
-use actix_web::{middleware::Logger, web, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::{
+    middleware::Logger,
+    web::{self, Data},
+    App, HttpRequest, HttpResponse, HttpServer,
+};
 use actix_ws::{Message, Session};
 use futures::stream::{FuturesUnordered, StreamExt};
 use log::info;
@@ -72,8 +76,7 @@ async fn ws(
                 break;
             }
 
-            if Instant::now().duration_since(alive2.lock().await.clone()) > Duration::from_secs(10)
-            {
+            if Instant::now().duration_since(*alive2.lock().await) > Duration::from_secs(10) {
                 let _ = session2.close(None).await;
                 break;
             }
@@ -195,7 +198,7 @@ async fn main() -> Result<(), anyhow::Error> {
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .data(chat.clone())
+            .app_data(Data::new(chat.clone()))
             .route("/", web::get().to(index))
             .route("/ws", web::get().to(ws))
     })
